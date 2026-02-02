@@ -1,10 +1,15 @@
-function getEnvVar(name: string): string {
-  const value = process.env[name];
+export function getSupabaseUrl(): string {
+  const value = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
+    throw new Error("Missing environment variable: NEXT_PUBLIC_SUPABASE_URL");
   }
   return value;
 }
 
-export const supabaseUrl = getEnvVar("NEXT_PUBLIC_SUPABASE_URL");
-export const supabaseAnonKey = getEnvVar("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+export function getSupabaseAnonKey(): string {
+  const value = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!value) {
+    throw new Error("Missing environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  }
+  return value;
+}
