@@ -57,16 +57,20 @@ async function fetchExerciseHistory(
   }
 
   // Transform to match ExerciseHistory type
-  return (data || []).map((item) => ({
-    id: item.id,
-    participant_name: (item.participants as { name: string }).name,
-    season_name: (item.seasons as { name: string }).name,
-    exercise_name: item.exercise_name,
-    difficulty: item.difficulty,
-    points_awarded: item.points_awarded,
-    notes: item.notes,
-    completed_at: item.completed_at,
-  }));
+  return (data || []).map((item) => {
+    const participant = item.participants as unknown as { name: string };
+    const season = item.seasons as unknown as { name: string };
+    return {
+      id: item.id,
+      participant_name: participant.name,
+      season_name: season.name,
+      exercise_name: item.exercise_name,
+      difficulty: item.difficulty,
+      points_awarded: item.points_awarded,
+      notes: item.notes,
+      completed_at: item.completed_at,
+    };
+  });
 }
 
 export function useExerciseHistory(filters: HistoryFilters = {}) {

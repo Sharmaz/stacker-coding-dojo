@@ -26,11 +26,9 @@ const exerciseSchema = z.object({
   participant_id: z.string().min(1, "Selecciona un participante"),
   exercise_name: z.string().min(1, "El nombre del ejercicio es requerido"),
   difficulty: z.enum(["Easy", "Medium", "Hard"], {
-    errorMap: () => ({ message: "Selecciona una dificultad" }),
+    error: "Selecciona una dificultad",
   }),
-  points_awarded: z.coerce
-    .number()
-    .positive("Los puntos deben ser mayores a 0"),
+  points_awarded: z.number().positive("Los puntos deben ser mayores a 0"),
   notes: z.string().optional(),
 });
 
@@ -180,7 +178,7 @@ export default function AddExercisePage() {
             />
 
             <Input
-              {...register("points_awarded")}
+              {...register("points_awarded", { valueAsNumber: true })}
               type="number"
               label="Puntos a Otorgar"
               description="Se autocompleta según la dificultad, pero puedes editarlo"
