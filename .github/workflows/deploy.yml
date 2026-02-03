@@ -1,0 +1,41 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            # Clone if first deploy, otherwise pull
+            if [ ! -d "${{ secrets.VPS_PROJECT_PATH }}" ]; then
+              git clone git@github.com:${{ github.repository }}.git ${{ secrets.VPS_PROJECT_PATH }}
+            fi
+
+            cd ${{ secrets.VPS_PROJECT_PATH }}
+            git pull origin main
+
+            # Create .env.local if it doesn't exist
+            if [ ! -f ".env.local" ]; then
+              echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env.local
+              echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.local
+            fi
+
+            npm install --production=false
+            npm run build
+
+            # Restart or start PM2 process
+            pm2 restart coding-dojo || pm2 start npm --name "coding-dojo" -- start
+            pm2 save
