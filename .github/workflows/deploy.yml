@@ -36,6 +36,7 @@ jobs:
             npm install --production=false
             npm run build
 
-            # Restart or start PM2 process
-            pm2 restart coding-dojo || pm2 start npm --name "coding-dojo" -- start
+            # Restart or start PM2 process on port 3001
+            pm2 delete coding-dojo 2>/dev/null || true
+            PORT=3001 pm2 start npm --name "coding-dojo" -- start
             pm2 save
